@@ -178,11 +178,6 @@ import { NONE } from '@/utils/shapeBaseTypes'
 import { slideJson } from '@/utils/slide'
 
 // import { highlightJSON } from "@/utils/toJson";
-// import { iconsStore } from '@/store/icons'
-// const store = iconsStore()
-// const name = computed(() => store.name)
-// const svgContent = computed(() => store.initIcon)
-// store.updateName('lee')
 
 const tips = () => {
   alert('开发中...')
