@@ -186,8 +186,6 @@ import { slideJson } from '@/utils/slide'
 
 const store = widgetStore()
 console.log(`output->stroe`, store)
-// const name = computed(() => store.name)
-// store.updateName('lee')
 
 const tips = () => {
   alert('开发中...')
@@ -226,9 +224,16 @@ const actions = computed(() => [
   },
 ])
 
-// 初始化头像数据
+/**
+ * 初始化头像数据
+ * 
+ * 导致数据不更新问题备注
+  let avatarOption: AvatarOption = reactive({
+    widgets: store.widgetsData,
+  })
+ */
 let avatarOption: AvatarOption = reactive({
-  widgets: store.widgetsData,
+  widgets: computed(() => store.widgetsData),
 })
 
 // 用于撤销前进数据
@@ -304,7 +309,7 @@ const onChange = (type: string, shape: string) => {
 
 // 导入svg数据
 const getSvgInitData = () => {
-  console.log(`output->getSvgInitData2`)
+  // console.log(`output->getSvgInitData2`, type, store.widgetsData, avatarOption)
   // 层级处理
   const sortedList = Object.entries(avatarOption.widgets).sort(
     ([prevShape, prev], [nextShape, next]) => {
@@ -330,42 +335,15 @@ const getSvgRawList = async () => {
   // 获取所有svg
   const svgInitData = getSvgInitData()
 
-  console.log(`output->getSvgRawList3`)
   const cur = await Promise.all(svgInitData.cur).then((raw) => {
     // console.log('raw', raw)
     const _cur = raw.map((svgRaw, i) => {
-      /**
-       * sortedList: len = 11, 二维数组
-       * widgetFillColor：获取填充色
-       * svgRaw：完整svg数据
-
-        * -> 截取掉头部
-        * svgRaw.indexOf('>', svgRaw.indexOf('<svg'))：index eg：109
-        * - indexOf(searchString, ?position)
-        * - svgRaw.indexOf('<svg') => 0
-        * - slice(?start, ?end)
-        *
-        * -> 截取掉尾部
-        * .replace('</svg>', '')
-        *
-        * -> 颜色替换
-        * .replaceAll(searchValue, replaceValue)
-        * 部分部位svg 存在：fill="$fillColor" -> 替换为 widgetFillColor
-        */
-
-      // if(svgInitData?.sortedList[i][1]) {
-      //   console.log(`output->glasses`,svgInitData?.sortedList[i][1])
-      // }
       const widgetFillColor = svgInitData?.sortedList[i][1].fillColor
       let content = svgRaw
         .slice(svgRaw.indexOf('>', svgRaw.indexOf('<svg')) + 1)
         .replace('</svg>', '')
         .replaceAll('$fillColor', widgetFillColor || '#000000')
 
-      /**
-       * 输出每一个部位的svg
-       * id=(eg:"vue-color-avatar-eyes"
-       */
       return `
         <g id="vue-color-avatar-${svgInitData?.sortedList[i][0]}">
           ${content}
@@ -396,32 +374,6 @@ const randomize = (type?) => {
   isRandomize.value = false
   colorsSetting.value = { ...colorsSettingData }
 }
-
-// 依赖追踪
-const size = 280
-watch(
-  [avatarOption],
-  async ([newAvatarOption]) => {
-    console.log('watch', avatarOption, '--------new:', newAvatarOption)
-
-    const svgRawList = await getSvgRawList()
-    svgContent.value = `
-    <svg
-      width="280"
-      height="280"
-      viewBox="0 0 ${size / 0.7} ${size / 0.7}"
-      preserveAspectRatio="xMidYMax meet"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <g transform="translate(100, 65)">
-        ${svgRawList.join('')}
-      </g>
-    </svg>
-  `
-  }
-  // { immediate: true }
-)
 
 // 前进后退时选中项跟随变化
 const changeActShape = (data, bgColor) => {
@@ -530,9 +482,38 @@ async function handleDownload() {
   }
 }
 
-onBeforeMount(() => {
+const renderSvg = async (type?) => {
+  const svgRawList = await getSvgRawList(type)
+  svgContent.value = `
+    <svg
+      width="280"
+      height="280"
+      viewBox="0 0 ${size / 0.7} ${size / 0.7}"
+      preserveAspectRatio="xMidYMax meet"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <g transform="translate(100, 65)">
+        ${svgRawList.join('')}
+      </g>
+    </svg>
+  `
+}
+
+onBeforeMount(async () => {
   randomize('init')
 })
+
+// 依赖追踪
+const size = 280
+watch(
+  [avatarOption],
+  async () => {
+    console.log(`output->watch`)
+    renderSvg()
+  }
+  // { immediate: true }
+)
 
 onUnmounted(() => {
   clipboard.destroy()
