@@ -4,7 +4,7 @@
 
 ## 效果预览
 
-![image](https://github.com/huiBuiling/vue3-svg/tree/main/images)
+![image](https://github.com/huiBuiling/vue3-svg/tree/main/images/result.png)
 
 ## Vue 3 + TypeScript + Vite
 
