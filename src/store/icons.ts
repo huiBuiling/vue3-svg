@@ -74,11 +74,11 @@ export const widgetStore = defineStore({
     //   return data
     // }
     updateWidget(data: any) {
-      console.log(`output->updateWidget`, data)
+      // console.log(`output->updateWidget`, data)
       this.widgetsData = data
     },
     addWidgetArr(data: AvatarOldOption) {
-      console.log(`output->updateWidget`, data)
+      // console.log(`output->updateWidget`, data)
       this.widgetsDataArr.push(data)
     },
     updateWidgetArr(index: number, type: string, value: string) {
@@ -87,7 +87,7 @@ export const widgetStore = defineStore({
       // _cur[index].widgets[type] = value
       this.widgetsDataArr[index].widgets[type] = value
     },
-    updateWidgetArrBg(index: number, type, value: string) {
+    updateWidgetArrBg(index: number, type, value: string | number) {
       if (type && index >= 0) {
         this.widgetsDataArr[index][type] = value
       }

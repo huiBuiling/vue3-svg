@@ -5,7 +5,9 @@
 </template>
 
 <script setup lang="ts">
-import Index from '@/pages/Emoticon/Index.vue'
+import Index from '@/pages/Index.vue'
+// import SvgTest from '@/components/SvgTest.vue'
+// import SvgAct from '@/components/SvgAct.vue'
 </script>
 
 <style scoped lang="scss">
